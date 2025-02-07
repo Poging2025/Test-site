@@ -1,35 +1,54 @@
-// netlify/functions/zapier-response.js
+// netlifyfunctions/zapier-response.js
+
+// Globale variabele om de laatst ontvangen data op te slaan
+let latestData = null;
 
 exports.handler = async function (event, context) {
-    // Sta alleen POST-verzoeken toe
-    if (event.httpMethod !== "POST") {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ error: "Method not allowed. Gebruik een POST-verzoek." }),
-      };
-    }
-  
+  // Als het een POST-verzoek is, verwerken en opslaan van de data
+  if (event.httpMethod === "POST") {
     try {
-      // Probeer de binnenkomende JSON te parsen
       const data = JSON.parse(event.body);
-      console.log("Ontvangen data:", data);
-  
-      // Hier kun je eventueel extra logica toevoegen, zoals de data opslaan of transformeren.
-      // In dit voorbeeld sturen we de ontvangen data terug met een bevestigingsbericht.
-  
+      latestData = data;  // Sla de ontvangen data op (voor demonstratiedoeleinden)
+      console.log("Ontvangen data via POST:", data);
       return {
         statusCode: 200,
         body: JSON.stringify({
           message: "Data succesvol ontvangen",
-          receivedData: data,
+          receivedData: data
         }),
       };
     } catch (error) {
-      console.error("Fout bij het verwerken van de request:", error);
+      console.error("Fout bij verwerken POST:", error);
       return {
         statusCode: 500,
         body: JSON.stringify({ error: "Interne serverfout" }),
       };
     }
-  };
-  
+  }
+  // Als het een GET-verzoek is, geef de laatst opgeslagen data terug
+  else if (event.httpMethod === "GET") {
+    if (latestData) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: "Laatste opgeslagen data",
+          receivedData: latestData
+        }),
+      };
+    } else {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: "Geen data gevonden" }),
+      };
+    }
+  }
+  // Voor andere HTTP-methoden geven we een 405 foutmelding
+  else {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({
+        error: "Method not allowed. Gebruik POST voor opslag en GET voor ophalen."
+      }),
+    };
+  }
+};

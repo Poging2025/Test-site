@@ -71,8 +71,8 @@
           method: "GET"
         });
         const result = await response.json();
-        // We gaan ervan uit dat jouw functie een JSON-object retourneert in deze vorm:
-        // { "message": "Data succesvol ontvangen", "receivedData": { "generated_text": "Jouw tekst" } }
+        // Verwacht JSON in deze vorm:
+        // { "message": "...", "receivedData": { "generated_text": "Jouw tekst" } }
         if (result && result.receivedData && result.receivedData.generated_text) {
           document.getElementById('output').innerText = "Gegenereerde tekst: " + result.receivedData.generated_text;
         } else {
